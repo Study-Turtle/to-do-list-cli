@@ -30,37 +30,39 @@ def rename(task, new_name):
 def list_tasks(filter='todo'):
   match filter:
     case 'done':
-      filter = lambda task: database[task]
+      for task in database:
+        if database[task]:
+          print('[x]', task)
     case 'all':
-      filter = lambda _: True
+      for task in database:
+        print('[x]' if database[task] else '[ ]', task)        
     case 'todo':
-      filter = lambda task: not database[task]
+      for task in database:
+        if not database[task]:
+          print('[ ]', task)
     case _:
       print(f'Unknown filter "{filter}"')
-  for task in database:
-    if filter(task):
-      print('[x]' if database[task] else '[ ]', task)
 
-def check(task):
+def complete(task):
   if task not in database:
     print(f'Task "{task}" does not exist')
     return
   database[task] = True
-  print(f'Checked "{task}"')
+  print(f'Completed "{task}"')
 
-def uncheck(task):
+def uncomplete(task):
   if task not in database:
     print(f'Task "{task}" does not exist')
     return
   database[task] = False
-  print(f'Unchecked "{task}"')
+  print(f'Uncompleted "{task}"')
 
 def toggle(task):
   if task not in database:
     print(f'Task "{task}" does not exist')
     return
   database[task] = not database[task]
-  print(f'Toggled "{task}"')
+  print(f'Toggled "{task}" to {"completed" if database[task] else "not completed"}')
 
 if __name__ == '__main__':
   print('To Do List CLI')
@@ -75,8 +77,8 @@ if __name__ == '__main__':
       case 'list':
         if len(args) > 1:
           list_tasks(filter=args[1])
-        else:
-          list_tasks()
+          continue
+        list_tasks()
       case 'remove':
         if len(args) < 2:
           print('Usage: remove <task>')
@@ -86,16 +88,16 @@ if __name__ == '__main__':
         if len(args) < 3:
           print('Usage: rename <old> <new>')
           continue
-        check(args[1], args[2])
-      case 'check':
+        complete(args[1], args[2])
+      case 'complete':
         if len(args) < 2:
-          print('Usage: check <task>')
-        check(args[1])
-      case 'uncheck':
+          print('Usage: complete <task>')
+        complete(args[1])
+      case 'uncomplete':
         if len(args) < 2:
-          print('Usage: uncheck <task>')
+          print('Usage: uncomplete <task>')
           continue
-        uncheck(args[1])
+        uncomplete(args[1])
       case 'toggle':
         if len(args) < 2:
           print('Usage: toggle <task>')
